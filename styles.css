@@ -1,0 +1,81 @@
+			* {
+				margin: 0;
+				padding: 0;
+			}
+
+			ul, ul li {
+				list-style: none;
+			}
+			.user-container, .date-container {
+				background: #CBDEFF;
+				padding: 25px;
+				
+			}
+
+			.submitEvent {
+				background: #CBDEFF;
+				color: #000;
+			}
+
+
+			.user-container, .user-container .creator, .date-container {
+				margin: 0 0 40px;
+				overflow: hidden;
+			}
+
+			.new-event span {
+				display: inline-block;
+				float: left;
+				width: 40%;
+				margin-right: 1%;
+			}
+
+			.new-event span.number {
+				width: 5%;
+				display: inline-block;
+				float: left;
+				font-size: 2em;
+			}
+
+			.new-event .removeUser, .dates li .btn-danger {
+				float: left;
+				margin-left: 1%;
+			}
+
+			.new-event .removeUser {
+				margin: 23px 0 0;
+			}
+
+			.new-event ul li {
+				padding: 0 0 20px 0;
+				overflow: hidden;
+			}
+
+			.new-event ul li.focus {
+				background: #EAF2FF;
+			}
+
+			.dates li label {
+				width: 100%;
+			}
+
+			.new-event p.description {
+				margin: 0 0 20px;
+			}
+
+			.form-control.eventDescription, .form-control.eventName {
+				margin: 0 0 20px;
+				
+			}
+				.form-control.eventName {
+					width: 70%;
+				}
+			.dates li .form-control {
+				width: 60%;
+				float: left;
+				display: inline-block;
+			}
+
+			.form-control.ng-invalid {
+				border: 1px solid red;
+			}

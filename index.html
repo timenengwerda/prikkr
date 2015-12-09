@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="testApp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<title>Basddas</title>
+
+		<!-- Bootstrap -->
+		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+		<body>
+			<div class="container"  style="max-width: 600px; margin: 0 auto;" ng-app="testApp">
+				<ul class="nav nav-pills" ng-controller="NavigationController as navigationCtrl">
+					<li ng-class="{active: navigationCtrl.isActive(1)}">
+						<a href="#/">Home</a>
+					</li>
+					<li ng-class="{active: navigationCtrl.isActive(2)}">
+						<a href="#/new">Nieuw</a>
+					</li>
+					<li ng-class="{active: navigationCtrl.isActive(3)}">
+						<a href="#/another">Nog een</a>
+					</li>
+				</ul>
+				<div ng-view></div>
+			</div>
+		</body>
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="bootstrap/js/bootstrap.min.js"></script>
+		<script src="angular.min.js"></script>
+		<script src="http://code.angularjs.org/1.4.0/angular-route.js"></script>
+		<script src="js/test.js"></script>
+
+		<link rel="stylesheet" href="styles.css">
+</html>
