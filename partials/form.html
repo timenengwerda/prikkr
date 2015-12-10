@@ -1,24 +1,24 @@
 <form action="" novalidate method="post" name="newEvent" ng-controller="EventController as event" class="new-event">
-	<h1>{{event.eventName}}</h1>
-	<p class="description">{{event.eventDescription}}</p>
+	<h1>{{eventName}}</h1>
+	<p class="description">{{eventDescription}}</p>
 
 	<div class="date-container">
 		<label for="eventname">Naam van het evenement</label>
-		<input required type="text" id="eventname" class="form-control eventName" ng-model="event.eventName">
+		<input required type="text" id="eventname" class="form-control eventName" ng-model="eventName">
 
 
 		<label for="eventdescription">Omschrijving van het evenement</label>
-		<textarea class="form-control eventDescription" id="eventdescription" ng-model="event.eventDescription"></textarea>
+		<textarea class="form-control eventDescription" id="eventdescription" ng-model="eventDescription"></textarea>
 		
 		<label>Kies dagen waar je vrienden uit kunnen kiezen</label>
 		<ul class="dates">
 			<li ng-repeat="date in chosenDates track by $index" class="">
 				<span class="number">{{$index+1}}</span>
-				<input type="text" placeholder="Kies datum" class="form-control" name="date" ng-model="date.date" jqdatepicker dateupdate="event.addNewDate(date, $index)" >
-				<button class="btn btn-danger" ng-hide="date.date == null" ng-click="event.removeNewDate($event, $index)">X</button>
+				<input type="text" placeholder="Kies datum" class="form-control" name="date" ng-model="date.date" jqdatepicker dateupdate="addNewDate(date, $index)" >
+				<button class="btn btn-danger" ng-hide="date.date == null" ng-click="removeNewDate($event, $index)">X</button>
 			</li>
 		</ul>
-		<span class="error-message" ng-show="chosenDates.length <= 1 && !atleastOneDateFilled()">Minstens 1 datum moet ingevuld zijn</span>
+		<span class="error-message" ng-show="!atleastOneDateFilled()">Minstens 1 datum moet ingevuld zijn</span>
 	</div>
 
 	<h2>Voeg mensen toe die je wilt uitnodigen</h2>
@@ -52,10 +52,12 @@
 					<label for="userEmail_{{$index+1}}">E-mailadres</label>
 					<input type="email" id="userEmail_{{$index+1}}" class="form-control" name="email" ng-model="user.email" ng-change="isUserFilled($index)">
 				</span>
-				<button class="btn btn-danger removeUser" ng-hide="user.name == null && user.email == null" ng-click="event.removeNewUser($event, $index)">X</button>
+				<button class="btn btn-danger removeUser" ng-hide="user.name == null && user.email == null" ng-click="removeNewUser($event, $index)">X</button>
 			</li>
 		</ul>
+		<span class="error-message" ng-show="!atleastOneUserFilled()">Minstens 1 vriend moet ingevuld zijn</span>
 	</div>
-	<input class="submitEvent btn btn-default" type="submit" ng-click="event.addEvent($event)" value="Sla het evenement op">
+	<input ng-disabled="!formIsValid() || isSaving"  class="submitEvent btn btn-default" type="submit" ng-click="addEvent($event)" value="Sla het evenement op">
+	<p ng-show="!formIsValid()" class="error">Nog niet alle verplichte velden zijn (goed) ingevuld!</p>
 	
 </form>
