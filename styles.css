@@ -79,3 +79,7 @@
 			.form-control.ng-invalid {
 				border: 1px solid red;
 			}
+
+			.choiceButton.selected {
+				background: #89DC8A;
+			}

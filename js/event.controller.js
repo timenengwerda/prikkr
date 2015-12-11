@@ -1,19 +1,23 @@
 
 var app = angular.module('testApp');
-app.controller('EventController', ['$scope', '$controller', '$http', '$location', 
-function ($scope, $controller, $http, $location) {
+app.controller('EventController', ['$scope', '$controller', '$http', '$location', '$routeParams', 
+function ($scope, $controller, $http, $location, $routeParams) {
+
 	//You need to supply a scope while instantiating.
 	var EventController = $scope.$new();
 
 	$scope.eventName = '';
 	$scope.eventDescription = '';
 
-	$scope.creator = [{name: '', id: '', email: ''}];
+	$scope.creator = {name: '', id: '', email: ''};
 
 	$scope.users = [];
 	$scope.isSaving = false;
 
-	$scope.chosenDates = [{date: null}];
+	$scope.chosenDates = [];
+	$scope.isNewEvent = true;
+	$scope.eventCode = null;
+	
 
 
 	$scope.addNewEmptyUser = function (e) {
@@ -24,12 +28,82 @@ function ($scope, $controller, $http, $location) {
 		$scope.users.push($controller('UserController', {$scope : EventController }));
 	};
 
-	$scope.addNewDate = function (date, ind) {
-		//Add the date to the earlier-created date object
-		$scope.chosenDates[ind] = {date: date};
+	$scope.getExistingEvent = function (userCode, eventCode) {
+		$http({
+			method  : 'POST',
+			url     : url + 'api/get_event.php',
+			data    : {code: eventCode, userCode: $scope.userCode}, 
+		}).success(function (data, status, headers) {
+			if (data && data.result && data.data && data.data.length > 0) {
+				for (var i in data.data) {
+					$scope.isCreator = data.data[i].isCreator;
+					if ($scope.isCreator != 1) {
+						$location.path('/');
+					}
 
-		//create a new date object for the next pass
-		$scope.chosenDates.push({date: null});
+					$scope.eventName = data.data[i].name;
+					$scope.eventDescription = data.data[i].description;
+
+					if (data.data[i].dates) {
+						for (var j in data.data[i].dates) {
+							var theDate = data.data[i].dates[j].timestamp;
+							//convert timestamp to the dateformatting used in the date-field(dd-mm-yyyy)
+							theDate = new Date(theDate*1000);
+							theDateString = theDate.getDate() +'-'+(theDate.getMonth()+1) +'-'+theDate.getFullYear();
+							var id = data.data[i].dates[j].dateId;
+
+							$scope.chosenDates.push({id: id, date: theDateString});
+						}
+						//Add an empty field at the end of the existing dates
+						$scope.chosenDates.push({date: null});
+						
+					}
+
+					if (data.data[i].users) {
+						for (var j in data.data[i].users) {
+							var user = data.data[i].users[j];
+							if (user) {
+								if (user.is_creator == 1) {
+									$scope.creator.name = user.name;
+									$scope.creator.id = user.id;
+									$scope.creator.email = user.email;
+
+								} else {
+									var newUser = $controller('UserController', {$scope : EventController });
+									newUser.name = user.name;
+									newUser.id = user.id;
+									newUser.email = user.email;
+									$scope.users.push(newUser);
+								}
+							}
+							
+						}
+					}
+					$scope.addNewEmptyUser();
+					
+				}
+				$scope.hasResult = true;
+			} else {
+				$location.path('/');
+			}
+		})
+		.error(function (data, status, header) {
+			console.error("Data: " + data +
+			"<hr />status: " + status +
+			"<hr />headers: " + header);
+		});
+	}
+
+	$scope.addNewDate = function (date, ind) {
+		//If the current date being added wasnt there before, add a new record at the bottom
+		if ($scope.chosenDates[ind].date == null) {
+			//create a new date object for the next pass
+			$scope.chosenDates.push({date: null});
+		}
+		//Add the date to the earlier-created date object
+		$scope.chosenDates[ind].date = date;
+
+		
 		$scope.$apply();
 	};
 
@@ -74,30 +148,32 @@ function ($scope, $controller, $http, $location) {
 
 	$scope.addEvent = function (e) {
 		e.preventDefault();
-
 		
 		if ($scope.formIsValid) {
 			$scope.isSaving = true;
-
+			var creatorId = ($scope.creator.id) ? $scope.creator.id  : null;
 			var data = {
+				eventCode: $scope.eventCode,
 				name: $scope.eventName,
 				description: $scope.eventDescription,
 				creator_name: $scope.creator.name,
 				creator_email: $scope.creator.email,
 				users: $scope.users,
-				dates: $scope.chosenDates
-
+				dates: $scope.chosenDates,
+				creatorId: creatorId
 			};
 
+			var fileToNavigateTo = ($scope.isNewEvent) ? 'new_event.php' : 'edit_event.php';
 
+			console.log(data);
 			$http({
 				method  : 'POST',
-				url     : url + 'api/new_event.php',
+				url     : url + 'api/' + fileToNavigateTo,
 				data    : data, 
 			}).success(function (data, status, headers) {
 				console.log(data);
 				if (data.result) {
-					if (data[0].code && data[0].creator_code) {
+					if (data[0] && data[0].code && data[0].creator_code) {
 						$location.path('event/' + data[0].code +'/'+data[0].creator_code);
 					}
 				}
@@ -109,6 +185,7 @@ function ($scope, $controller, $http, $location) {
 				"<hr />headers: " + header);
 				$scope.isSaving = false;
 			});
+			$scope.isSaving = false;
 		}
 
 	};
@@ -128,6 +205,18 @@ function ($scope, $controller, $http, $location) {
 		}
 	};
 
-	$scope.addNewEmptyUser();
+	if ($routeParams.userCode && $routeParams.eventCode) {
+		//Its an edit form!
+		$scope.isNewEvent = false;
+
+		$scope.userCode = $routeParams.userCode;
+		$scope.eventCode = $routeParams.eventCode;
+
+		$scope.getExistingEvent($scope.userCode, $scope.eventCode);
+	} else {
+		$scope.addNewEmptyUser();
+		$scope.chosenDates = [{date: null}];
+	}
+	
 
 }]);

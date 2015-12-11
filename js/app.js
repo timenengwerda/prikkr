@@ -1,4 +1,4 @@
-var url = 'http://localhost:8888/prikkr/';
+var url = '/prikkr/';
 var app = angular.module('testApp', ['ngRoute']);
 app.directive('jqdatepicker', function () {
     return {

@@ -26,7 +26,6 @@
 		<h3>Je eigen gegevens</h3>
 		<ul class="creator">
 			<li>
-				<input type="hidden" name="creatorId" ng-model="creator.id">
 				<span class="name">
 					<label for="creatorName">Jouw naam</label>
 					<input required type="text" id="creatorName" class="form-control" name="name" ng-model="creator.name">
@@ -42,7 +41,6 @@
 		<h3>De gegevens van je vriend(en)</h3>
 		<ul class="users">
 			<li ng-repeat="user in users track by $index" class="userListItem">
-				<input type="hidden" name="userId" ng-model="user.id">
 				<span class="number">{{$index+1}}</span>
 				<span class="name">
 					<label for="userName_{{$index+1}}">Naam</label>

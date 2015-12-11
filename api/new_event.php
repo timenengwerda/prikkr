@@ -15,12 +15,10 @@ if (isset($postData['name']) && !empty($postData['name'])
 	&& isset($postData['users']) && count($postData['users']) > 0) {
 	$code = createCode();
 	$query = "INSERT INTO 
-				event(name, description, creator_name, creator_email, code, creation_date) 
+				event(name, description, code, creation_date) 
 			VALUES(
 				'".mysqli_real_escape_string($connection, $postData['name'])."', 
 				'".mysqli_real_escape_string($connection, $postData['description'])."', 
-				'".mysqli_real_escape_string($connection, $postData['creator_name'])."', 
-				'".mysqli_real_escape_string($connection, $postData['creator_email'])."', 
 				'".$code."',
 				'".date("Y-m-d H:i:s")."'
 			)";
@@ -44,7 +42,7 @@ if (isset($postData['name']) && !empty($postData['name'])
 				if (!$result) {
 					$data['result'] = false;
 				} else {
-					$dateIds[] = mysqli_insert_id($connection);;
+					$dateIds[] = mysqli_insert_id($connection);
 				}
 			}
 			
@@ -83,12 +81,13 @@ if (isset($postData['name']) && !empty($postData['name'])
 			
 			$creatorCode = createCode();
 			$qry = "INSERT INTO 
-							event_user (event_id, name, email, code) 
+							event_user (event_id, name, email, code, is_creator) 
 						VALUES (
 							'".mysqli_real_escape_string($connection, $addedId)."',
 							'".mysqli_real_escape_string($connection, $postData['creator_name'])."', 
 							'".mysqli_real_escape_string($connection, $postData['creator_email'])."', 
-							'".mysqli_real_escape_string($connection, $creatorCode)."'
+							'".mysqli_real_escape_string($connection, $creatorCode)."',
+							1
 						)";
 			$result = mysqli_query($connection, $qry);
 			if (!$result) {
@@ -127,8 +126,6 @@ if (isset($postData['name']) && !empty($postData['name'])
 					'id' => $row['id'],
 					'name' => $row['name'],
 					'description' => $row['description'],
-					'creator_name' => $row['creator_name'],
-					'creator_email' => $row['creator_email'],
 					'code' => $row['code'],
 					'creator_code' => $creatorCode
 				);
@@ -145,15 +142,7 @@ if (isset($postData['name']) && !empty($postData['name'])
 	$data['result'] = false;
 }
 
-function createCode () {
-	$code = time() + rand(0, 9999) + microtime() + rand(0, 99999);
-	$code = sha1($code);
-	$code = md5($code);
-	
-	$code = substr($code, 0, 5);
 
-	return $code;
-}
 
 header('Content-Type: application/json');
 echo json_encode($data);

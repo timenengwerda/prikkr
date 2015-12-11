@@ -26,11 +26,10 @@ app.config(['$routeProvider', function($routeProvider) {
 		controller: 'NavigationController',
 		activeTab: 2
 	}).
-	when('/event/:eventCode/:userCode', {
-		templateUrl: 'partials/event_detail.html',
-		controller: 'EventDetailController'
+	when('/event/edit/:eventCode/:userCode', {
+		templateUrl: 'partials/form.html'
 	}).
-	when('/event/:eventCode/', {
+	when('/event/:eventCode/:userCode', {
 		templateUrl: 'partials/event_detail.html',
 		controller: 'EventDetailController'
 	}).

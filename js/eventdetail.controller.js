@@ -1,13 +1,10 @@
-app.controller('EventDetailController', ['$scope', '$http', '$routeParams', function ($scope, $http, $routeParams) {
+app.controller('EventDetailController', ['$scope', '$http', '$routeParams', '$location',
+function ($scope, $http, $routeParams, $location) {
 	$scope.eventCode = $routeParams.eventCode;
-
-	if ($routeParams.userCode) {
-		$scope.userCode = $routeParams.userCode;
-	}
+	$scope.userCode = $routeParams.userCode;
 
 	$scope.hasResult = false;
 	
-
 	$scope.creator_email = '';
 	$scope.creator_name = '';
 	$scope.name = '';
@@ -16,15 +13,17 @@ app.controller('EventDetailController', ['$scope', '$http', '$routeParams', func
 	$scope.creation_time = '';
 	$scope.dates = [];
 
+	$scope.isCreator = 0;
 
 	$scope.getEvent = function (code) {
 		$http({
 			method  : 'POST',
 			url     : url + 'api/get_event.php',
-			data    : {code: code}, 
+			data    : {code: code, userCode: $scope.userCode}, 
 		}).success(function (data, status, headers) {
 			if (data && data.result && data.data.length > 0) {
 				for (var i in data.data) {
+					$scope.isCreator = data.data[i].isCreator;
 					$scope.creator_email = data.data[i].creator_email;
 					$scope.creator_name = data.data[i].creator_name;
 					$scope.name = data.data[i].name;
@@ -33,9 +32,12 @@ app.controller('EventDetailController', ['$scope', '$http', '$routeParams', func
 					$scope.creation_time = data.data[i].creation_time;
 					if (data.data[i].dates) {
 						for (var j in data.data[i].dates) {
-							var theDate = data.data[i].dates[j];
+							var theDate = data.data[i].dates[j].date;
 							$scope.dates.push({
-								date: theDate
+								choiceId: data.data[i].dates[j].choice.choiceId,
+								date: theDate,
+								choice: data.data[i].dates[j].choice.choice,
+								choiceLoading: false
 							});
 						}
 						
@@ -52,7 +54,15 @@ app.controller('EventDetailController', ['$scope', '$http', '$routeParams', func
 		});
 	}
 
-	$scope.voteForDate = function (dateIndex, choice) {
+	$scope.editEvent = function (e) {
+		e.preventDefault();
+		if ($scope.isCreator && $scope.userCode) {
+			console.log('event/edit/' + $scope.eventCode +'/' + $scope.userCode);
+			$location.path('event/edit/' + $scope.eventCode +'/' + $scope.userCode);
+		}
+	}
+
+	$scope.voteForDate = function (dateIndex, choice, choiceId) {
 		/*
 		choices:
 		1: yes
@@ -60,7 +70,25 @@ app.controller('EventDetailController', ['$scope', '$http', '$routeParams', func
 		3: maybe
 		0: no choice (Primary state in DB)
 		*/
-		console.log()
+		//
+		//Dont save when its already saving. You can see that by checking choiceLoading bool
+		if ($scope.dates[dateIndex].choiceLoading === false) {
+			$scope.dates[dateIndex].choiceLoading = true;
+			$http({
+				method  : 'POST',
+				url     : url + 'api/save_user_choice.php',
+				data    : {choiceId: choiceId, choice: choice}, 
+			}).success(function (data, status, headers) {
+				$scope.dates[dateIndex].choiceLoading = false;
+				$scope.dates[dateIndex].choice = choice;
+			})
+			.error(function (data, status, header) {
+				console.error("Data: " + data +
+				"<hr />status: " + status +
+				"<hr />headers: " + header);
+			});
+		}
+		
 	}
 
 	if ($scope.eventCode) {

@@ -3,6 +3,10 @@
 	<span class="submitted-by">
 		Gemaakt door <em>{{creator_name}}</em> op {{creation_date}} om {{creation_time}}
 	</span>
+
+	<span class="edit">
+		<a href="#" ng-show="isCreator == 1" ng-click="editEvent($event)">Wijzig evenement</a>
+	</span>
 	<p class="description">
 		{{description}}
 	</p>
@@ -12,9 +16,10 @@
 		<ul class="dates">
 			<li ng-repeat="date in dates track by $index">
 				{{date.date}}
-				<button class="btn btn-default" ng-click="voteForDate($index, 1)">Ja</button>
-				<button class="btn btn-default" ng-click="voteForDate($index, 2)">Nee</button>
-				<button class="btn btn-default" ng-click="voteForDate($index, 3)">Misschien</button>
+				<button class="btn btn-default choiceButton" ng-class="{selected: date.choice == 1}" ng-click="voteForDate($index, 1, date.choiceId)">Ja</button> 
+				<button class="btn btn-default choiceButton" ng-class="{selected: date.choice == 2}" ng-click="voteForDate($index, 2, date.choiceId)">Nee</button> 
+				<button class="btn btn-default choiceButton" ng-class="{selected: date.choice == 3}" ng-click="voteForDate($index, 3, date.choiceId)">Misschien</button> 
+				<span class="choiceLoading" ng-show="date.choiceLoading">Laden</span>
 			</li>
 		</ul>
 	</div>
