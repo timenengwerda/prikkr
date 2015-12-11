@@ -1,4 +1,4 @@
-<div ng-controller="EventDetailController as event">
+<div ng-show="hasResult">
 	<h1>{{name}}</h1>
 	<span class="submitted-by">
 		Gemaakt door <em>{{creator_name}}</em> op {{creation_date}} om {{creation_time}}
@@ -6,4 +6,19 @@
 	<p class="description">
 		{{description}}
 	</p>
+
+	<div class="date-container" ng-show="dates.length > 0">
+		<h2>Kies je voorkeursdag(en)</h2>
+		<ul class="dates">
+			<li ng-repeat="date in dates track by $index">
+				{{date.date}}
+				<button class="btn btn-default" ng-click="voteForDate($index, 1)">Ja</button>
+				<button class="btn btn-default" ng-click="voteForDate($index, 2)">Nee</button>
+				<button class="btn btn-default" ng-click="voteForDate($index, 3)">Misschien</button>
+			</li>
+		</ul>
+	</div>
+</div>
+<div class="no-result" ng-show="!hasResult">
+Geen resultaat gevonden.
 </div>

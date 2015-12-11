@@ -1,6 +1,7 @@
 
 var app = angular.module('testApp');
-app.controller('EventController', ['$scope', '$controller', '$http', function ($scope, $controller, $http) {
+app.controller('EventController', ['$scope', '$controller', '$http', '$location', 
+function ($scope, $controller, $http, $location) {
 	//You need to supply a scope while instantiating.
 	var EventController = $scope.$new();
 
@@ -13,6 +14,7 @@ app.controller('EventController', ['$scope', '$controller', '$http', function ($
 	$scope.isSaving = false;
 
 	$scope.chosenDates = [{date: null}];
+
 
 	$scope.addNewEmptyUser = function (e) {
 		if (e) {
@@ -94,6 +96,11 @@ app.controller('EventController', ['$scope', '$controller', '$http', function ($
 				data    : data, 
 			}).success(function (data, status, headers) {
 				console.log(data);
+				if (data.result) {
+					if (data[0].code && data[0].creator_code) {
+						$location.path('event/' + data[0].code +'/'+data[0].creator_code);
+					}
+				}
 				$scope.isSaving = false;
 			})
 			.error(function (data, status, header) {

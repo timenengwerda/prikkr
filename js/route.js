@@ -26,10 +26,13 @@ app.config(['$routeProvider', function($routeProvider) {
 		controller: 'NavigationController',
 		activeTab: 2
 	}).
-	when('/event/:eventCode', {
+	when('/event/:eventCode/:userCode', {
 		templateUrl: 'partials/event_detail.html',
-		controller: 'NavigationController',
-		activeTab: 3
+		controller: 'EventDetailController'
+	}).
+	when('/event/:eventCode/', {
+		templateUrl: 'partials/event_detail.html',
+		controller: 'EventDetailController'
 	}).
 	otherwise({
 		redirectTo: '/',
