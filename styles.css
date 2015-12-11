@@ -83,3 +83,10 @@
 			.choiceButton.selected {
 				background: #89DC8A;
 			}
+
+			.submitted-by {
+				font-size: 0.9em;
+				font-style: italic;
+				padding: 0 0 10px;
+				display: inline-block;
+			}

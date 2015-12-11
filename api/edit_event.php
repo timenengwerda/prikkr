@@ -43,8 +43,9 @@ if (isset($postData['name']) && !empty($postData['name'])
 			//The event is updated. Now update/remove/add dates
 			$newDateIds = processDates($postData['dates'], $eventId);
 			$currentUsers = processUsers($postData['users'], $eventId);
-			$creatorCode = processCreator($postData['creator_name'], $postData['creator_email'], $postData['creatorId']);
+			$creatorCode = processCreator($postData['creator_name'], $postData['creator_email'], $postData['creatorId'], $postData['eventCode']);
 			$allUsers = getAllUsers($eventId);
+			$eventCode = $postData['eventCode'];
 			
 			//for each new date every user should get a new choice in date_userchoice
 			foreach ($newDateIds as $dateId) {
@@ -65,6 +66,20 @@ if (isset($postData['name']) && !empty($postData['name'])
 					}
 				}
 			}
+
+			//Mail all users with an update
+			if ($allUsers) {
+				$emails = array();
+				foreach ($allUsers as $user) {
+$html = '
+Hoi ' . $user['name'] . ',<br>
+Het evenement "'.$postData['name'].'" waar je voor ingeschreven bent is zojuist gewijzigd.
+Je kan het evenement <a href="http://www.tengwerda.nl/prikkr/#/event/' . $eventCode . '/' . $user['code'] . '">hier</a> terug vinden.
+';
+						mailIt($user['email'], $postData['name'] . ' is gewijzigd op Prikkr', $html);
+				}
+			}
+
 			$query = "SELECT * FROM event WHERE id=" . mysqli_real_escape_string($connection, $eventId) . " LIMIT 1";
 			$result = mysqli_query($connection, $query);
 
@@ -88,7 +103,7 @@ if (isset($postData['name']) && !empty($postData['name'])
 	$data['result'] = false;
 }
 
-function processCreator ($name, $email, $creatorId) {
+function processCreator ($name, $email, $creatorId, $eventCode) {
 	global $connection;
 
 	$creatorCode = false;
@@ -110,8 +125,12 @@ function processCreator ($name, $email, $creatorId) {
 		}
 	}
 
-
-	var_dump(mailIt('tengwerda@gmail.com', 'test', 'Een body'));
+/*$html = '
+Hoi ' . $name . ',<br>
+Je hebt zojuist op Prikkr je evenement gewijzigd. 
+Je kan je evenement <a href="http://www.tengwerda.nl/prikkr/#/event/' . $eventCode . '/' . $creatorCode . '">hier</a> terug vinden.
+';
+	mailIt($email, 'Je hebt je evenement gewijzigd op Prikkr', $html);*/
 
 	return $creatorCode;
 }

@@ -14,6 +14,7 @@ if (isset($postData['code']) && !empty($postData['code'])
 	if ($result && mysqli_num_rows($result) > 0) {
 		while ($row = mysqli_fetch_array($result)) {
 			$currentUser = getUser ($postData['userCode']);
+			$creator = getCreator($row['id']);
 			if (count($currentUser) > 0) {
 				$chosenDates = getDatesByUser ($currentUser['id']);
 				$data['data'][] = array(
@@ -21,8 +22,8 @@ if (isset($postData['code']) && !empty($postData['code'])
 					'name' => $row['name'],
 					'description' => $row['description'],
 					'code' => $row['code'],
-					'creator_name' => $currentUser['name'],
-					'creator_email' => $currentUser['email'],
+					'creator_name' => $creator['name'],
+					'creator_email' => $creator['email'],
 					'creation_date' => translateMonth(date('d F Y', strtotime($row['creation_date']))),
 					'creation_time' => date('H:i', strtotime($row['creation_date'])),
 					'dates' => $chosenDates,
@@ -40,6 +41,27 @@ if (isset($postData['code']) && !empty($postData['code'])
 function getUser ($userCode) {
 	global $connection;
 	$query = "SELECT * FROM event_user WHERE code='" . mysqli_real_escape_string($connection, $userCode) . "'";
+	$result = mysqli_query($connection, $query);
+	$user = array();
+	if ($result && mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_array($result)) {
+			$user['name'] = $row['name'];
+			$user['email'] = $row['email'];
+			$user['id'] = $row['id'];
+			$user['is_creator'] = $row['is_creator'];
+
+		}	
+	}
+
+	return $user;
+}
+
+
+function getCreator ($eventId) {
+	global $connection;
+	$query = "SELECT * FROM event_user 
+			WHERE event_id='" . mysqli_real_escape_string($connection, $eventId) . "'
+			AND is_creator = 1";
 	$result = mysqli_query($connection, $query);
 	$user = array();
 	if ($result && mysqli_num_rows($result) > 0) {

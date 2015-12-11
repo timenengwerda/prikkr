@@ -21,13 +21,10 @@
 			<div class="container"  style="max-width: 600px; margin: 0 auto;" ng-app="testApp">
 				<ul class="nav nav-pills" ng-controller="NavigationController as navigationCtrl">
 					<li ng-class="{active: navigationCtrl.isActive(1)}">
-						<a href="#/">Home</a>
+						<a href="#/">Home(Is leeg)</a>
 					</li>
 					<li ng-class="{active: navigationCtrl.isActive(2)}">
-						<a href="#/new">Nieuw</a>
-					</li>
-					<li ng-class="{active: navigationCtrl.isActive(3)}">
-						<a href="#/another">Nog een</a>
+						<a href="#/new">Nieuw evenement maken</a>
 					</li>
 				</ul>
 				<div ng-view></div>

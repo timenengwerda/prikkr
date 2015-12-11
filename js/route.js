@@ -29,6 +29,10 @@ app.config(['$routeProvider', function($routeProvider) {
 	when('/event/edit/:eventCode/:userCode', {
 		templateUrl: 'partials/form.html'
 	}).
+	when('/event/overview/:eventCode/:userCode', {
+		templateUrl: 'partials/overview.html',
+		controller: 'EventOverviewController'
+	}).
 	when('/event/:eventCode/:userCode', {
 		templateUrl: 'partials/event_detail.html',
 		controller: 'EventDetailController'

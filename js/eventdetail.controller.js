@@ -62,6 +62,16 @@ function ($scope, $http, $routeParams, $location) {
 		}
 	}
 
+	$scope.viewEvent = function (e) {
+		e.preventDefault();
+		if ($scope.isCreator && $scope.userCode) {
+			console.log('event/overview/' + $scope.eventCode +'/' + $scope.userCode);
+			$location.path('event/overview/' + $scope.eventCode +'/' + $scope.userCode);
+		}
+	}
+
+	//viewEvent
+
 	$scope.voteForDate = function (dateIndex, choice, choiceId) {
 		/*
 		choices:

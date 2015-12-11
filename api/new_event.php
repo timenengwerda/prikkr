@@ -7,6 +7,8 @@ $data['result'] = true;
 $data['data'] = $postData;
 $creatorCode = false;
 
+require_once('mailer.php');
+
 if (isset($postData['name']) && !empty($postData['name'])
 	&& isset($postData['description']) && !empty($postData['description'])
 	&& isset($postData['creator_name']) && !empty($postData['creator_name'])
@@ -70,7 +72,13 @@ if (isset($postData['name']) && !empty($postData['name'])
 				} else {
 					$userId = mysqli_insert_id($connection);
 					$userIds[] = $userId;
-					
+
+$html = '
+Hoi ' . $user['name'] . ',<br>
+'.$postData['creator_name'].' heeft je uitgenodigd om je beschikbare dagen te selecteren voor het evenement "'.$postData['name'].'".
+Je kan het evenement <a href="http://www.tengwerda.nl/prikkr/#/event/' . $code . '/' . $userCode . '">hier</a> terug vinden.
+';
+						mailIt($user['email'], 'Je bent uitgenodigd voor evenement "'.$postData['name'].'" op Prikkr', $html);
 				}
 			}
 		}
