@@ -1,0 +1,32 @@
+<div class="overview">
+	<h2>De keuze van alle vrienden</h2>
+		<ul class="userChoices">
+		<li ng-repeat="user in users">
+			<strong>{{user.userData.name}}</strong>
+			<ul class="dates" style="padding-left: 20px;">
+				<li ng-repeat="date in user.dates">
+					{{date.formatted}} - {{date.choice}}
+				</li>
+			</ul>
+		</li> 
+	</ul>
+
+	<h2>Totaal</h2>
+
+	<div ng-show="totals" class="total">
+
+		<div class="allPlausibleDates">
+			<h3>Geschikte datums</h3>
+			<ul class="plausibleDates">
+				<li ng-repeat="date in totals.plausibleDates">
+					{{date.formatted}} - <span ng-bind-html="date.text"></span>
+				</li>
+			</ul>
+			<p class="no-plausible-dates" ng-show="totals.plausibleDates.length == 0">
+				Er is geen geschikte datum gevonden omdat er geen datum was zonder NEE stem.
+				<a href="#" ng-show="isCreator == 1" ng-click="editEvent($event)">Voeg meer datums toe</a>
+			</p>
+		</div>
+
+	</div>
+</div>
