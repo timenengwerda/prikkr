@@ -103,6 +103,7 @@ function getDatesByUser ($userId) {
 		while ($row = mysqli_fetch_array($result)) {
 			$theDate = translateMonth(date('d F Y', strtotime($row['chosen_date'])));
 			$dates[] = array(
+				'userId' => $userId,
 				'dateId' => $row['dateId'],
 				'date' => $theDate,
 				'timestamp' => strtotime($row['chosen_date']),

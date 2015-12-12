@@ -281,7 +281,8 @@ function processDates ($dates, $eventId) {
 			if (isset($date['id']) && $existingId == $date['id']) {
 				//This ID is known and is received again. See if it needs updating
 				$reformattedDate = date('Y-m-d H:i:s', strtotime($date['date']));
-				if ($reformattedDate != $date) {
+				//echo $existingDate .'--'.$reformattedDate .'<--<br><br>';
+				if ($existingDate != $reformattedDate) {
 					$datesToUpdate[$existingId] = $reformattedDate;
 				}
 			}
@@ -298,6 +299,7 @@ function processDates ($dates, $eventId) {
 			mysqli_query($connection, $qry);
 		}
 	}
+	//var_dump($datesToUpdate);
 
 	if (count($datesToUpdate) > 0) {
 		foreach ($datesToUpdate as $id => $date) {
