@@ -1,17 +1,4 @@
 <div class="overview">
-	<h2>De keuze van alle vrienden</h2>
-		<ul class="userChoices">
-		<li ng-repeat="user in users">
-			<strong>{{user.userData.name}}</strong>
-			<ul class="dates" style="padding-left: 20px;">
-				<li ng-repeat="date in user.dates">
-					{{date.formatted}} - {{date.choice}}
-				</li>
-			</ul>
-		</li> 
-	</ul>
-
-	<h2>Totaal</h2>
 
 	<div ng-show="totals" class="total">
 
@@ -29,4 +16,18 @@
 		</div>
 
 	</div>
+	
+	<h2>De keuze van alle vrienden</h2>
+		<ul class="userChoices">
+		<li ng-repeat="user in users">
+			<strong>{{user.userData.name}}</strong>
+			<ul class="dates" style="padding-left: 20px;">
+				<li ng-repeat="date in user.dates">
+					{{date.formatted}} - {{date.choice}}
+				</li>
+			</ul>
+		</li> 
+	</ul>
+
+
 </div>

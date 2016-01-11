@@ -40,6 +40,7 @@ app.config(['$routeProvider', function($routeProvider) {
 	otherwise({
 		redirectTo: '/',
 		controller: 'NavigationController',
+		templateUrl: 'partials/home.html',
 		activeTab: 1
 	});
 }]);

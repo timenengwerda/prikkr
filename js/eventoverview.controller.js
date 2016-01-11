@@ -32,13 +32,13 @@ function ($scope, $http, $routeParams, $location, $sce) {
 
 		var newArray = [];
 
-		var yesVotes = 0;
-		var noVotes = 0;
-		var maybeVotes = 0;
-		var unvoted = 0;
+
 		for (var date in $scope.allUniqueDates) {
 			var choices = $scope.allUniqueDates[date];
-
+			var yesVotes = 0;
+			var noVotes = 0;
+			var maybeVotes = 0;
+			var unvoted = 0;
 			//Assume there are only yes votes unless the switch states otherwise
 			var onlyYesAndMaybeVotes = true;
 			for (var j in choices) {
