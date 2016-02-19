@@ -104,7 +104,7 @@ function getDatesByUser ($userId) {
 			$theDate = translateMonth(date('d F Y', strtotime($row['chosen_date'])));
 			$dates[] = array(
 				'userId' => $userId,
-				'dateId' => $row['dateId'],
+				'event_date_id' => $row['event_date_id'],
 				'date' => $theDate,
 				'timestamp' => strtotime($row['chosen_date']),
 				'choice' => array(

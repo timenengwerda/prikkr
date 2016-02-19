@@ -9,6 +9,7 @@ if (isset($postData['code']) && !empty($postData['code'])
 	&& isset($postData['userCode']) && !empty($postData['userCode'])) {
 	$code = $postData['code'];
 	$userCode = $postData['userCode'];
+
 	$query = "SELECT * FROM event WHERE code='" . mysqli_real_escape_string($connection, $code) . "'";
 	$result = mysqli_query($connection, $query);
 

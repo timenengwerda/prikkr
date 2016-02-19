@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL);
 require_once('connect.php');
 $post = file_get_contents("php://input");
 $postData = json_decode($post, true);
@@ -10,11 +11,12 @@ $creatorCode = false;
 require_once('mailer.php');
 
 if (isset($postData['name']) && !empty($postData['name'])
-	&& isset($postData['description']) && !empty($postData['description'])
+	&& isset($postData['description'])
 	&& isset($postData['creator_name']) && !empty($postData['creator_name'])
 	&& isset($postData['creator_email']) && !empty($postData['creator_email'])
 	&& isset($postData['dates']) && count($postData['dates']) > 0
 	&& isset($postData['users']) && count($postData['users']) > 0) {
+
 	$code = createCode();
 	$query = "INSERT INTO 
 				event(name, description, code, creation_date) 
@@ -25,6 +27,7 @@ if (isset($postData['name']) && !empty($postData['name'])
 				'".date("Y-m-d H:i:s")."'
 			)";
 	if (mysqli_query($connection, $query)) {
+		
 		$addedId = mysqli_insert_id($connection);
 
 		//Add dates
@@ -76,7 +79,7 @@ if (isset($postData['name']) && !empty($postData['name'])
 $html = '
 Hoi ' . $user['name'] . ',<br>
 '.$postData['creator_name'].' heeft je uitgenodigd om je beschikbare dagen te selecteren voor het evenement "'.$postData['name'].'".
-Je kan het evenement <a href="http://www.tengwerda.nl/prikkr/#/event/' . $code . '/' . $userCode . '">hier</a> terug vinden.
+<a href="http://www.tengwerda.nl/prikkr/#/event/' . $code . '/' . $userCode . '">Geef nu je keuze door</a> 
 ';
 						mailIt($user['email'], 'Je bent uitgenodigd voor evenement "'.$postData['name'].'" op Prikkr', $html);
 				}
@@ -102,6 +105,12 @@ Je kan het evenement <a href="http://www.tengwerda.nl/prikkr/#/event/' . $code .
 				$data['result'] = false;
 			} else {
 				$userIds[] = mysqli_insert_id($connection);
+$html = '
+Hoi ' . $postData['creator_name'] . ',<br>
+Je evenement "'.$postData['name'].'" is aangemaakt en een mail is verstuurd naar alle opgegeven vrienden.<br>
+<a href="http://www.tengwerda.nl/prikkr/#/event/' . $code . '/' . $creatorCode . '">Geef je eigen keuze door</a> of <a href="http://www.tengwerda.nl/prikkr/#/event/overview/' . $code . '/' . $creatorCode . '">Bekijk wat je vrienden tot nu ingevuld hebben</a>.<br>
+';
+				mailIt($postData['creator_email'], 'Je bent uitgenodigd voor evenement "'.$postData['name'].'" op Prikkr', $html);
 			}
 		}
 

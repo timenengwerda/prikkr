@@ -185,7 +185,7 @@ function ($scope, $controller, $http, $location, $routeParams) {
 				"<hr />headers: " + header);
 				$scope.isSaving = false;
 			});
-			$scope.isSaving = false;
+			
 		}
 
 	};

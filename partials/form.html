@@ -60,5 +60,6 @@
 	</div>
 	<input ng-disabled="!formIsValid() || isSaving"  class="submitEvent btn btn-default" type="submit" ng-click="addEvent($event)" value="Sla het evenement op">
 	<p ng-show="!formIsValid()" class="error">Nog niet alle verplichte velden zijn (goed) ingevuld!</p>
+	<span ng-show="isSaving">Laden</span>
 	
 </form>

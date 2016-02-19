@@ -23,6 +23,7 @@ function ($scope, $http, $routeParams, $location) {
 		}).success(function (data, status, headers) {
 			if (data && data.result && data.data.length > 0) {
 				for (var i in data.data) {
+					$scope.id = data.data[i].id;
 					$scope.isCreator = data.data[i].isCreator;
 					$scope.creator_email = data.data[i].creator_email;
 					$scope.creator_name = data.data[i].creator_name;
@@ -32,8 +33,11 @@ function ($scope, $http, $routeParams, $location) {
 					$scope.creation_time = data.data[i].creation_time;
 					if (data.data[i].dates) {
 						for (var j in data.data[i].dates) {
+
 							var theDate = data.data[i].dates[j].date;
+							
 							$scope.dates.push({
+								event_date_id: data.data[i].dates[j].event_date_id,
 								choiceId: data.data[i].dates[j].choice.choiceId,
 								date: theDate,
 								choice: data.data[i].dates[j].choice.choice,
@@ -83,12 +87,17 @@ function ($scope, $http, $routeParams, $location) {
 		*/
 		//
 		//Dont save when its already saving. You can see that by checking choiceLoading bool
+		console.log($scope.dates[dateIndex]);
 		if ($scope.dates[dateIndex].choiceLoading === false) {
 			$scope.dates[dateIndex].choiceLoading = true;
 			$http({
 				method  : 'POST',
 				url     : url + 'api/save_user_choice.php',
-				data    : {choiceId: choiceId, choice: choice}, 
+				data    : {choiceId: choiceId, 
+							choice: choice,
+							event_date_id: $scope.dates[dateIndex].event_date_id,
+							event_id: $scope.id
+						}, 
 			}).success(function (data, status, headers) {
 				$scope.dates[dateIndex].choiceLoading = false;
 				$scope.dates[dateIndex].choice = choice;
