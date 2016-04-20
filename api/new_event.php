@@ -14,15 +14,17 @@ if (isset($postData['name']) && !empty($postData['name'])
 	&& isset($postData['description'])
 	&& isset($postData['creator_name']) && !empty($postData['creator_name'])
 	&& isset($postData['creator_email']) && !empty($postData['creator_email'])
+	&& isset($postData['location']) && !empty($postData['location'])
 	&& isset($postData['dates']) && count($postData['dates']) > 0
 	&& isset($postData['users']) && count($postData['users']) > 0) {
 
 	$code = createCode();
 	$query = "INSERT INTO 
-				event(name, description, code, creation_date) 
+				event(name, description, location, code, creation_date) 
 			VALUES(
 				'".mysqli_real_escape_string($connection, $postData['name'])."', 
 				'".mysqli_real_escape_string($connection, $postData['description'])."', 
+				'".mysqli_real_escape_string($connection, $postData['location'])."', 
 				'".$code."',
 				'".date("Y-m-d H:i:s")."'
 			)";
@@ -143,6 +145,7 @@ Je evenement "'.$postData['name'].'" is aangemaakt en een mail is verstuurd naar
 					'id' => $row['id'],
 					'name' => $row['name'],
 					'description' => $row['description'],
+					'location' => $row['location'],
 					'code' => $row['code'],
 					'creator_code' => $creatorCode
 				);

@@ -2,12 +2,11 @@
 var app = angular.module('testApp');
 app.controller('EventController', ['$scope', '$controller', '$http', '$location', '$routeParams', 
 function ($scope, $controller, $http, $location, $routeParams) {
-
-	//You need to supply a scope while instantiating.
 	var EventController = $scope.$new();
 
 	$scope.eventName = '';
 	$scope.eventDescription = '';
+	$scope.eventLocation = '';
 
 	$scope.creator = {name: '', id: '', email: ''};
 
@@ -43,6 +42,11 @@ function ($scope, $controller, $http, $location, $routeParams) {
 
 					$scope.eventName = data.data[i].name;
 					$scope.eventDescription = data.data[i].description;
+
+					//added later, so might not exist in some events.
+					if (data.data[i].location) {
+						$scope.eventLocation = data.data[i].location;
+					}
 
 					if (data.data[i].dates) {
 						for (var j in data.data[i].dates) {
@@ -155,6 +159,7 @@ function ($scope, $controller, $http, $location, $routeParams) {
 			var data = {
 				eventCode: $scope.eventCode,
 				name: $scope.eventName,
+				location: $scope.eventLocation,
 				description: $scope.eventDescription,
 				creator_name: $scope.creator.name,
 				creator_email: $scope.creator.email,

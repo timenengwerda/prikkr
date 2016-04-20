@@ -12,6 +12,7 @@ require_once('mailer.php');
 
 if (isset($postData['name']) && !empty($postData['name'])
 	&& isset($postData['description']) && !empty($postData['description'])
+	&& isset($postData['location']) && !empty($postData['location'])
 	&& isset($postData['creator_name']) && !empty($postData['creator_name'])
 	&& isset($postData['creator_email']) && !empty($postData['creator_email'])
 	&& isset($postData['dates']) && count($postData['dates']) > 0
@@ -37,7 +38,8 @@ if (isset($postData['name']) && !empty($postData['name'])
 					event 
 				SET 
 					name = '".mysqli_real_escape_string($connection, $postData['name'])."', 
-					description = '".mysqli_real_escape_string($connection, $postData['description'])."'
+					description = '".mysqli_real_escape_string($connection, $postData['description'])."',
+					location = '".mysqli_real_escape_string($connection, $postData['location'])."'
 				WHERE id = '".mysqli_real_escape_string($connection, $eventId)."'";		
 		if (mysqli_query($connection, $qry)) {
 			//The event is updated. Now update/remove/add dates
@@ -89,6 +91,7 @@ Je kan het evenement <a href="http://www.tengwerda.nl/prikkr/#/event/' . $eventC
 						'id' => $row['id'],
 						'name' => $row['name'],
 						'description' => $row['description'],
+						'location' => $row['location'],
 						'code' => $row['code'],
 						'creator_code' => $creatorCode
 					);

@@ -7,6 +7,9 @@
 	<p class="description">
 		{{description}}
 	</p>
+	<p class="location" ng-show="{{location != ''}">
+		<strong>Locatie:</strong> {{location}}
+	</p>
 
 	<span class="edit">
 		<a href="#" ng-show="isCreator == 1" ng-click="editEvent($event)">Wijzig evenement</a>

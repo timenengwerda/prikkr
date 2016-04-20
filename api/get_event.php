@@ -21,6 +21,7 @@ if (isset($postData['code']) && !empty($postData['code'])
 					'id' => $row['id'],
 					'name' => $row['name'],
 					'description' => $row['description'],
+					'location' => $row['location'],
 					'code' => $row['code'],
 					'creator_name' => $creator['name'],
 					'creator_email' => $creator['email'],

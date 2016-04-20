@@ -12,7 +12,6 @@ function ($scope, $http, $routeParams, $location, $sce) {
 
 	$scope.allUniqueDates = [];
 	$scope.checkPlausibleDate = function (data) {
-		console.log(data);
 
 		for (var i in data) {
 			var user = data[i].user;
@@ -112,7 +111,7 @@ function ($scope, $http, $routeParams, $location, $sce) {
 			url     : url + 'api/get_event_overview.php',
 			data    : {code: code, userCode: $scope.userCode}, 
 		}).success(function (data, status, headers) {
-			console.log(data);
+			//console.log(data);
 			if (data && data.result && data.data) {
 				$scope.isCreator = data.isCreator;
 				/*if ($scope.isCreator != 1) {
@@ -124,8 +123,6 @@ function ($scope, $http, $routeParams, $location, $sce) {
 						
 						var newDates = [];
 						for (var j in data.data[i].dates) {
-							
-
 							var choiceString = $scope.getChoiceString (data.data[i].dates[j].choice.choice);
 
 							var theDate = data.data[i].dates[j].timestamp;

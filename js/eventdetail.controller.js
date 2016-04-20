@@ -9,6 +9,7 @@ function ($scope, $http, $routeParams, $location) {
 	$scope.creator_name = '';
 	$scope.name = '';
 	$scope.description = '';
+	$scope.location = '';
 	$scope.creation_date = '';
 	$scope.creation_time = '';
 	$scope.dates = [];
@@ -29,6 +30,7 @@ function ($scope, $http, $routeParams, $location) {
 					$scope.creator_name = data.data[i].creator_name;
 					$scope.name = data.data[i].name;
 					$scope.description = data.data[i].description;
+					$scope.location = data.data[i].location;
 					$scope.creation_date = data.data[i].creation_date;
 					$scope.creation_time = data.data[i].creation_time;
 					if (data.data[i].dates) {
