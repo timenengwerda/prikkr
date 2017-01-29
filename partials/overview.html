@@ -13,6 +13,12 @@
 				Er is geen geschikte datum gevonden omdat er geen datum was zonder NEE stem.
 				<a href="#" ng-show="isCreator == 1" ng-click="editEvent($event)">Voeg meer datums toe</a>
 			</p>
+			
+			<p class="no-plausible-dates" ng-show="totals.noResult && totals.mostYesVotes.date">
+				Er is geen geschikte datum gevonden waarop niemand NEE heeft gestemd. De datum met de meeste JA stemmen is: 
+				<br>
+				<strong>{{totals.mostYesVotes.date}}</strong>
+			</p>
 		</div>
 
 	</div>

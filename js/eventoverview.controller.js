@@ -30,6 +30,7 @@ function ($scope, $http, $routeParams, $location, $sce) {
 		}
 
 		var newArray = [];
+		var dateWithMostYesVotes = false;
 
 
 		for (var date in $scope.allUniqueDates) {
@@ -63,6 +64,10 @@ function ($scope, $http, $routeParams, $location, $sce) {
 				}
 			}
 
+			if (yesVotes > dateWithMostYesVotes) {
+				dateWithMostYesVotes = date;
+			}
+
 			if (onlyYesAndMaybeVotes) {
 				var text = $sce.trustAsHtml('Ja (' + yesVotes + ')<br>\
 				Misschien (' + maybeVotes + ')<br>');
@@ -71,10 +76,50 @@ function ($scope, $http, $routeParams, $location, $sce) {
 					text: text 
 				});	
 			}
-
 		}
 		
 		return newArray;
+		
+	}
+
+	$scope.getDateWithMostYesVotes = function (data) {
+		for (var i in data) {
+			var user = data[i].user;
+			var dates = data[i].dates;
+			//Collect unique dates
+			for (var j in dates) {
+				if (!$scope.allUniqueDates[dates[j].date]) {
+					$scope.allUniqueDates[dates[j].date] = [];
+				}
+				
+				$scope.allUniqueDates[dates[j].date].push(dates[j].choice.choice);
+			}
+		}
+
+		var dateWithMostYesVotes = false;
+		var highestYesVotes = 0;
+
+		for (var date in $scope.allUniqueDates) {
+			var choices = $scope.allUniqueDates[date];
+			var yesVotes = 0;
+
+			for (var j in choices) {
+				var choice = choices[j];
+				if (choice == 1) {
+					yesVotes++;
+				}
+				
+
+			}
+
+			if (yesVotes >= highestYesVotes) {
+				highestYesVotes = yesVotes;
+				dateWithMostYesVotes = date;
+			}
+
+		}
+		
+		return dateWithMostYesVotes;
 		
 	}
 
@@ -148,6 +193,16 @@ function ($scope, $http, $routeParams, $location, $sce) {
 				$scope.totals = {
 					plausibleDates: plausibleDate
 				}
+
+				if (plausibleDate.length === 0) {
+					$scope.totals = {
+						noResult: true,
+						mostYesVotes: {
+							date: $scope.getDateWithMostYesVotes(data.data)
+						}
+					}
+				}
+
 
 				//$scope.plausibleDatesString = plausibleDate;
 
