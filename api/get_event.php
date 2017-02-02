@@ -25,15 +25,16 @@ if (isset($postData['code']) && !empty($postData['code'])
 					'code' => $row['code'],
 					'creator_name' => $creator['name'],
 					'creator_email' => $creator['email'],
-					'creation_date' => translateMonth(date('d F Y', strtotime($row['creation_date']))),
-					'creation_time' => date('H:i', strtotime($row['creation_date'])),
+					// 'creation_date' => translateMonth(date('d F Y', strtotime($row['creation_date']))),
+                    'creation_date' => strtotime($row['creation_date']),
+					// 'creation_time' => date('H:i', strtotime($row['creation_date'])),
 					'dates' => $chosenDates,
 					'isCreator' => $currentUser['is_creator'],
 					'users' => getAllUsers($row['id'])
 				);
 			}
-			
-		}	
+
+		}
 		$data['result'] = true;
 	}
 
@@ -51,7 +52,7 @@ function getUser ($userCode) {
 			$user['id'] = $row['id'];
 			$user['is_creator'] = $row['is_creator'];
 
-		}	
+		}
 	}
 
 	return $user;
@@ -60,7 +61,7 @@ function getUser ($userCode) {
 
 function getCreator ($eventId) {
 	global $connection;
-	$query = "SELECT * FROM event_user 
+	$query = "SELECT * FROM event_user
 			WHERE event_id='" . mysqli_real_escape_string($connection, $eventId) . "'
 			AND is_creator = 1";
 	$result = mysqli_query($connection, $query);
@@ -72,7 +73,7 @@ function getCreator ($eventId) {
 			$user['id'] = $row['id'];
 			$user['is_creator'] = $row['is_creator'];
 
-		}	
+		}
 	}
 
 	return $user;
@@ -84,17 +85,17 @@ function getCreator ($eventId) {
 function getDatesByUser ($userId) {
 	global $connection;
 	$dates = array();
-	$query = "SELECT 
+	$query = "SELECT
 				ed.*,
 				ed.id as dateId,
 				duc.event_date_id,
 				duc.user_id,
 				duc.choice,
-				duc.id as choiceId 
-			FROM 
+				duc.id as choiceId
+			FROM
 				event_date as ed,
 				date_userchoice as duc
-			WHERE 
+			WHERE
 				duc.user_id = '".mysqli_real_escape_string($connection, $userId)."'
 			AND
 				ed.id = duc.event_date_id";
@@ -107,7 +108,7 @@ function getDatesByUser ($userId) {
 				'userId' => $userId,
 				'event_date_id' => $row['event_date_id'],
 				'date' => $theDate,
-				'timestamp' => strtotime($row['chosen_date']),
+				'timestamp' => strtotime($row['chosen_date']) * 1000,
 				'choice' => array(
 					'choice' => $row['choice'],
 					'choiceId' => $row['choiceId']

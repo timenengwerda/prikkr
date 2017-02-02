@@ -56,7 +56,7 @@
 import Calendar from '../Calendar'
 
 export default {
-  name: 'app',
+  name: 'newEvent',
   components: {
     Calendar
   },
@@ -95,8 +95,7 @@ export default {
         dates: this.datesToAdd[0],
         creatorId: creatorId
       }
-      console.log(this.datesToAdd[0])
-      console.log(data)
+
       this.$http.post('http://localhost/api/new_event.php', data).then((a) => {
         console.log(a)
       }, (e) => {
