@@ -1,5 +1,29 @@
 <?php
 error_reporting(E_ALL);
+
+require_once('Connect.php');
+require_once('Event.php');
+$data['result'] = false;
+$data['input'] = $_GET;
+$connection = new Connect();
+
+$post = file_get_contents("php://input");
+$postData = json_decode($post, true);
+if (isset($postData['name']) && !empty($postData['name'])
+&& isset($postData['description'])
+&& isset($postData['creator_name']) && !empty($postData['creator_name'])
+&& isset($postData['creator_email']) && !empty($postData['creator_email'])
+&& isset($postData['location']) && !empty($postData['location'])
+&& isset($postData['dates']) && count($postData['dates']) > 0
+&& isset($postData['users']) && count($postData['users']) > 0) {
+    $event = new Event();
+    $data = $event->createEvent($postData);
+    var_dump($data);
+}
+header('Content-Type: application/json');
+echo json_encode($data);
+/*
+error_reporting(E_ALL);
 require_once('connect.php');
 $post = file_get_contents("php://input");
 $postData = json_decode($post, true);
@@ -165,4 +189,5 @@ Je evenement "'.$postData['name'].'" is aangemaakt en een mail is verstuurd naar
 
 header('Content-Type: application/json');
 echo json_encode($data);
+*/
 ?>

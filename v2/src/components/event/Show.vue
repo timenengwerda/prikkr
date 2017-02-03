@@ -27,7 +27,9 @@
 </template>
 
 <script>
-import moment from 'Moment'
+import moment from 'moment'
+moment.locale('nl')
+
 export default {
   name: 'showEvent',
   data () {
@@ -64,22 +66,17 @@ export default {
     voteForDate (dateIndex, choice) {
       let date = this.event.dates[dateIndex]
       if (date) {
+        date.choiceLoading = true
         date.choice = choice
       }
     },
     init () {
-      const data = {
-        userCode: this.userId,
-        code: this.eventId
-      }
-
-      this.$http.post('http://localhost/api/get_event.php', data).then((result) => {
+      this.$http.get(`http://localhost:8888/api/get_event.php?code=${this.eventId}&userCode=${this.userId}`).then((result) => {
         this.loading = false
 
         if (result.ok && result.body.data) {
           const dataObject = result.body.data
           if (dataObject) {
-            console.log(dataObject)
             dataObject.forEach(data => {
               this.event.id = data.id
               this.event.isCreator = data.isCreator
@@ -89,7 +86,7 @@ export default {
               this.event.description = data.description
               this.event.location = data.location
               this.event.creation_date = moment(data.creation_date).format('DD MMM')
-              this.event.creation_time = moment(data.creation_date).format('HH:mm')
+              this.event.creation_time = moment(data.creation_date).format('kk:mm')
               this.event.dates = []
 
               if (data.dates) {

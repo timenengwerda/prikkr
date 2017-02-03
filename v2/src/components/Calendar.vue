@@ -1,9 +1,9 @@
 <template>
     <div class="calendar">
         <div class="navigation">
-            <a href="#" class="previous" v-show="showPrevBtn" v-on:click="previousMonth()">trug</a>
+            <a href="#" class="previous" v-show="showPrevBtn" v-on:click.prevent="previousMonth()">trug</a>
             <span class="month-name">{{ activeMonthName() }} {{ activeYear }}</span>
-            <a href="#" class="next" v-show="showNextBtn" v-on:click="nextMonth()">volg</a>
+            <a href="#" class="next" v-show="showNextBtn" v-on:click.prevent="nextMonth()">volg</a>
         </div>
         <div class="days">
             <div>ma</div>
@@ -16,7 +16,7 @@
         </div>
         <div class="months">
           <div class="month" v-for="month in calendar" v-show="month.num === activeMonth && month.year === activeYear">
-            <a href="#" v-on:click="dayClicked(day, (month.days.length === (index + 1)))" class="day" v-bind:class="[{selected: day.selected}, dayClass(day)]" v-for="(day, index) in month.days">
+            <a href="#" v-on:click.prevent="dayClicked(day, (month.days.length === (index + 1)))" class="day" v-bind:class="[{selected: day.selected}, dayClass(day)]" v-for="(day, index) in month.days">
               {{ dayDisplay(day.date, day.showFullDate) }}
             </a>
           </div>
@@ -25,7 +25,8 @@
 </template>
 
 <script>
-import moment from 'Moment'
+import moment from 'moment'
+
 export default {
   name: 'calendar',
   data () {
@@ -130,7 +131,7 @@ export default {
       }
     },
     activeMonthName () {
-      return moment([this.activeYear, this.activeMonth]).format('MMMM')
+      return moment([this.activeYear, this.activeMonth]).locale('nl').format('MMMM')
     },
     monthExists (monthToCheck, yearToCheck) {
       let foundMatch = false

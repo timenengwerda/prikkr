@@ -54,6 +54,7 @@
 
 <script>
 import Calendar from '../Calendar'
+import config from '../../config'
 
 export default {
   name: 'newEvent',
@@ -96,8 +97,10 @@ export default {
         creatorId: creatorId
       }
 
-      this.$http.post('http://localhost/api/new_event.php', data).then((a) => {
-        console.log(a)
+      this.$http.post(`${config.rootUrl}/api/new_event.php`, data).then((result) => {
+        if (result.ok && result.body.length && result.body[0].code && result.body[0].creator_code) {
+          this.$router.push({name: 'showEvent', params: { userId: result.body[0].creator_code, eventId: result.body[0].code }})
+        }
       }, (e) => {
         console.log(e)
       })
