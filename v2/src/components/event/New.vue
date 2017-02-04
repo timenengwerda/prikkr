@@ -74,11 +74,11 @@ export default {
       },
       invites: [{
         name: 'test',
-        email: 'test@test.nl'
+        email: 'timen@masoutreach.nl'
       },
       {
         name: 'test2',
-        email: 'test2@test.nl'
+        email: 'timen@masoutreach.frl'
       }]
     }
   },
@@ -98,6 +98,7 @@ export default {
       }
 
       this.$http.post(`${config.rootUrl}/api/new_event.php`, data).then((result) => {
+        console.log(result)
         if (result.ok && result.body.length && result.body[0].code && result.body[0].creator_code) {
           this.$router.push({name: 'showEvent', params: { userId: result.body[0].creator_code, eventId: result.body[0].code }})
         }

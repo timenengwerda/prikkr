@@ -5,7 +5,7 @@
       <h1>{{ event.name }}</h1>
       <p>Aangemaakt op {{ event.creation_date }} om {{ event.creation_time }}uur</p>
       <p>Door {{ event.creator_name }}</p>
-      <p v-if="event.location">Vind plaats op: {{ event.location }}</p>
+      <p v-if="event.location">Vindt plaats op: {{ event.location }}</p>
       <p>{{ event.description }}</p>
 
       <ul class="dates">
@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import config from '../../config'
 import moment from 'moment'
 moment.locale('nl')
 
@@ -65,13 +66,38 @@ export default {
   methods: {
     voteForDate (dateIndex, choice) {
       let date = this.event.dates[dateIndex]
-      if (date) {
+      if (date && date.choiceLoading === false) {
         date.choiceLoading = true
-        date.choice = choice
+        // date.choice = choice
+        /*
+        choices:
+        1: yes
+        2: no
+        3: maybe
+        0: no choice (Primary state in DB)
+        */
+        //
+
+        const data = {
+          choiceId: date.choiceId,
+          choice: choice,
+          event_date_id: date.event_date_id,
+          event_id: this.eventId,
+          user_id: this.userId
+        }
+
+        this.$http.post(`${config.rootUrl}/api/save_user_choice.php`, data).then((result) => {
+          if (result.ok && result.body.result) {
+            date.choice = choice
+            date.choiceLoading = false
+          }
+        }, (e) => {
+          console.log(e)
+        })
       }
     },
     init () {
-      this.$http.get(`http://localhost:8888/api/get_event.php?code=${this.eventId}&userCode=${this.userId}`).then((result) => {
+      this.$http.get(`${config.rootUrl}/api/get_event.php?code=${this.eventId}&userCode=${this.userId}`).then((result) => {
         this.loading = false
 
         if (result.ok && result.body.data) {
@@ -115,4 +141,8 @@ export default {
   }
 }
 </script>
-
+<style>
+  .selected {
+    background: green;
+  }
+</style>

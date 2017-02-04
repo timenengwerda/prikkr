@@ -3,7 +3,8 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 const routes = [
   { path: '/', component: view('event/New') },
-  { name: 'showEvent', path: '/event/:eventId/:userId', component: view('event/Show') }
+  { name: 'showEvent', path: '/event/:eventId/:userId', component: view('event/Show') },
+  { name: 'overviewEvent', path: '/event/overview/:eventId/:userId', component: view('event/Overview') }
 ]
 /* eslint-disable no-new */
 /* eslint-disable no-undef */

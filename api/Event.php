@@ -2,14 +2,14 @@
 class Event extends Connect {
     private $eventCode;
     private $userCode;
-    private $event = array();
+    public $event = array();
     private $users;
 
     function __construct ($eventCode = false, $userCode = false) {
         $this->eventCode = $eventCode;
         $this->userCode = $userCode;
 
-        if ($this->hasParams()) {
+        if ($this->eventCode) {
             $this->event = $this->getEvent();
 
             if ($this->event) {
@@ -114,6 +114,65 @@ class Event extends Connect {
         }
 
         return $creator;
+    }
+
+    function datesByScore ($overview) {
+        // group the dates
+        $datesGrouped = array();
+        foreach ($overview as $item) {
+            foreach ($item['dates'] as $date) {
+                if (!in_array($date['timestamp'], $datesGrouped)) {
+                    $datesGrouped[] = $date['timestamp'];
+                }
+            }
+        }
+
+        // count votes for each unique timestmap
+        $dateObject = array();
+        foreach ($datesGrouped as $timestamp) {
+            $obj = array();
+            $obj['timestamp'] = $timestamp;
+            $obj['yesVotes'] = $this->countVotes($overview, $timestamp, 1);
+            $obj['noVotes'] = $this->countVotes($overview, $timestamp, 2);
+            $obj['maybeVotes'] = $this->countVotes($overview, $timestamp, 3);
+            $obj['notVoted'] = $this->countVotes($overview, $timestamp, 0);
+
+            $dateObject[] = $obj;
+        }
+
+        if ($dateObject) {
+            $datesGroupedByScore = array();
+            foreach ($dateObject as $object) {
+                $score = 0;
+
+                // For every yes vote assign 3 points
+                $score += $object['yesVotes'] * 3;
+
+                // Fore very maybevote assign 2 points
+                $score += $object['maybeVotes'] * 2;
+
+                // Fore very novote assign 1 point
+                $score += $object['noVotes'];
+
+                $datesGroupedByScore[$score][] = $object;
+            }
+        }
+        krsort($datesGroupedByScore);
+
+        return $datesGroupedByScore;
+    }
+
+    function countVotes($overview, $timestamp, $voteNum) {
+        $votes = 0;
+        foreach ($overview as $item) {
+            foreach ($item['dates'] as $date) {
+                if ($date['timestamp'] == $timestamp && $date['choice']['choice'] == $voteNum) {
+                    $votes++;
+                }
+            }
+        }
+
+        return $votes;
     }
 
     function getDatesByUser ($userId) {
@@ -304,6 +363,112 @@ class Event extends Connect {
         $code = substr($code, 0, 5);
 
         return $code;
+    }
+
+    function saveUserChoice ($postData) {
+        $saveResult = false;
+        $choice = $postData['choice'];
+        $choiceId = $postData['choiceId'];
+        $event_date_id = $postData['event_date_id'];
+        if ($choice == 1 || $choice == 2 || $choice == 3) {
+            if ($this->event) {
+                $qry = "UPDATE
+                            date_userchoice
+                        SET
+                            choice = '".mysqli_real_escape_string($this->connection(), $choice)."'
+                        WHERE
+                            id = '".mysqli_real_escape_string($this->connection(), $choiceId)."'
+                        AND
+                            event_date_id = '".mysqli_real_escape_string($this->connection(), $event_date_id)."'";
+                $result = mysqli_query($this->connection(), $qry);
+                if ($result) {
+                    $saveResult = true;
+
+                    $this->mailIfEveryoneMadeChoice();
+                }
+            }
+        }
+        return $result;
+    }
+
+    function mailIfEveryoneMadeChoice () {
+        // var_dump($this->allUsersMadeChoice());
+        if ($this->allUsersMadeChoice()) {
+            // $creatorOfEvent = getCreatorOfEvent($this->event['id']);
+            $creator = $this->getCreator();
+            if ($creator) {
+                $creatorOfEvent = $creator->userObject();
+                $html = '
+                Hoi ' . $creatorOfEvent['name'] . ',<br>
+                Iedereen heeft een datum gekozen voor je evenement <b>' . $this->event['name'] . '</b><br>
+                <a href="http://www.tengwerda.nl/prikkr/#/event/overview/' . $this->eventCode . '/' . $creatorOfEvent['code'] . '">Bekijk welke geschikte datum(s) er zijn!</a>.<br>
+                ';
+
+                require_once('mailer.php');
+                mailIt($creatorOfEvent['email'], 'De stemmen zijn geteld voor "'.$creatorOfEvent['name'].'" op Prikkr', $html);
+            }
+        }
+    }
+
+    function allUsersMadeChoice () {
+        //Get the event_date_ids that are associated with the user_choices.
+        $qry = "SELECT
+                event_date.id as event_date_id,
+                event_date.event_id
+            FROM
+                event_date
+            WHERE
+                event_date.event_id = '".mysqli_real_escape_string($this->connection(), $this->event['id'])."'";
+        if ($result = mysqli_query($this->connection(), $qry)) {
+            $eventDateIds = array();
+            while ($row = mysqli_fetch_array($result)) {
+                //Save the event date ids
+                $eventDateIds[] = $row['event_date_id'];
+            }
+
+            if (count($eventDateIds) > 0) {
+                //Create a string from the array of IDS so we can use SQL's IN statement. WHERE id IN (1, 2, 3) etc.
+                $eventDateString = '';
+                foreach ($eventDateIds as $id) {
+                    $eventDateString .= $id . ', ';
+                }
+                $eventDateString = substr($eventDateString, 0, -2);
+
+                $getChoices = "SELECT * FROM date_userchoice WHERE event_date_id IN(" . $eventDateString .") AND choice = 0";
+                if ($result = mysqli_query($this->connection(), $getChoices)) {
+                    $count = mysqli_num_rows($result);
+                    //If the count is = 0 it means that all choices are not 0(0 means no choice made)
+                    if ($count == 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    function getOverview () {
+        $data = array();
+        $users = $this->getAllUsers();
+        if ($users) {
+            foreach ($users as $user) {
+                $datesByUser = $this->getDatesByUser ($user->userObject()['id']);
+                if ($datesByUser) {
+                    $data[] = array(
+                        'user' => array(
+                            'id' => $user->userObject()['id'],
+                            'name' => $user->userObject()['name'],
+                            'email' => $user->userObject()['email'],
+                            'is_creator' => $user->isCreator()
+                        ),
+                        'dates' => $datesByUser
+                    );
+                }
+            }
+        }
+
+        return $data;
     }
 }
 ?>

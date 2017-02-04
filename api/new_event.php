@@ -18,7 +18,7 @@ if (isset($postData['name']) && !empty($postData['name'])
 && isset($postData['users']) && count($postData['users']) > 0) {
     $event = new Event();
     $data = $event->createEvent($postData);
-    var_dump($data);
+    // var_dump($data);
 }
 header('Content-Type: application/json');
 echo json_encode($data);
