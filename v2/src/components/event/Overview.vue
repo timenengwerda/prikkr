@@ -5,15 +5,25 @@
       <h1>{{ event.name }}</h1>
       <div v-if="everyoneVoted">
         Iedereen heeft gestemd. Hieronder van beste tot slechtste:<br>
-        <ul v-for="groupedDates in datesByScore">
-          <li v-for="date in groupedDates">
-            {{ formattedDate(date.timestamp) }} {{ date.yesVotes }}
+        <ul>
+          <li v-for="date in datesByScore">
+            {{ formattedDate(date.timestamp) }} <br>
+            Score: {{ date.score }}
           </li>
         </ul>
       </div>
       <div v-else>
-        Nog niet iedereen heeft gestemd. De datum(s) met de meeste ja/misschien stemmen tot nu zijn:
-        <br>asdj
+        Nog niet iedereen heeft gestemd.
+        <div v-if="datesByScore.length > 0 && datesByScore[0].score !== 0">
+          De beste datum op dit moment zou zijn:
+            <br>
+            <ul>
+              <li>
+                {{ formattedDate(datesByScore[0].timestamp) }} <br>
+                Score: {{ datesByScore[0].score }}
+              </li>
+            </ul>
+          </div>
       </div>
       <ul>
         <li v-for="user in users">
@@ -105,15 +115,7 @@ export default {
           this.users = result.body.users
           this.isCreator = result.body.is_creator
           this.event = result.body.event
-          // this.datesByScore = result.body.datesByScore
-
-          for (var i in result.body.datesByScore) {
-            let dates = result.body.datesByScore[i]
-            dates.forEach(date => {
-              this.datesByScore.push(date)
-            })
-          }
-
+          this.datesByScore = result.body.datesByScore
           this.loading = false
 
           // group the dates so we can easily count each of them without a user attached

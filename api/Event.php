@@ -14,6 +14,8 @@ class Event extends Connect {
 
             if ($this->event) {
                 $this->users = $this->getAllUsers();
+            } else {
+                exit;
             }
         }
     }
@@ -102,6 +104,7 @@ class Event extends Connect {
                 $users[] = $user;
             }
         }
+
         return $users;
     }
 
@@ -159,7 +162,20 @@ class Event extends Connect {
         }
         krsort($datesGroupedByScore);
 
-        return $datesGroupedByScore;
+        /*
+        They're in the right order from top to bottom now. But VUE does it's own sorting for some weird reason
+        if you use PHP's key's in an array(JS doesnt know keys that well)
+        So, now put it into a new array without they keys but still in the correct order from highest score to lowest
+        */
+
+        $finalArray = array();
+        foreach($datesGroupedByScore as $score => $date) {
+            $date[0]['score'] = $score;
+            $finalArray[] = $date[0];
+        }
+
+
+        return $finalArray;
     }
 
     function countVotes($overview, $timestamp, $voteNum) {
