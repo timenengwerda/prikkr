@@ -8,6 +8,9 @@
       <p v-if="event.location">Vindt plaats op: {{ event.location }}</p>
       <p>{{ event.description }}</p>
 
+      <a v-bind:href="overviewUrl" class="btn btn-primary">Bekijk wat alle anderen hebben gestemd</a>
+      <a v-bind:href="editUrl" v-if="isCreator" class="btn btn-primary">Wijzig het evenement</a>
+
       <ul class="dates">
         <li v-for="(dateObj, index) in event.dates">
           <span class="date">{{ dateObj.date }}</span>
@@ -38,6 +41,7 @@ export default {
       eventId: this.$route.params.eventId,
       userId: this.$route.params.userId,
       loading: true,
+      isCreator: false,
       event: {
         id: '',
         isCreator: '',
@@ -53,8 +57,11 @@ export default {
     }
   },
   computed: {
-    isCreator () {
-      return true
+    overviewUrl () {
+      return `/#/event/overview/${this.eventId}/${this.userId}`
+    },
+    editUrl () {
+      return `/#/event/edit/${this.eventId}/${this.userId}`
     },
     mayAccess () {
       return this.eventId && this.userId
@@ -106,6 +113,7 @@ export default {
             dataObject.forEach(data => {
               this.event.id = data.id
               this.event.isCreator = data.isCreator
+              this.isCreator = data.isCreator
               this.event.creator_email = data.creator_email
               this.event.creator_name = data.creator_name
               this.event.name = data.name

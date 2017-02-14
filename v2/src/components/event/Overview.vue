@@ -3,6 +3,7 @@
     <span v-if="loading">Laden</span>
     <div class="event" v-else>
       <h1>{{ event.name }}</h1>
+      <a v-bind:href="editUrl" v-if="isCreator" class="btn btn-primary">Wijzig het evenement</a>
       <div v-if="everyoneVoted">
         Iedereen heeft gestemd. Hieronder van beste tot slechtste:<br>
         <ul>
@@ -76,6 +77,9 @@ export default {
     }
   },
   computed: {
+    editUrl () {
+      return `/#/event/edit/${this.eventId}/${this.userId}`
+    },
     mayAccess () {
       return (this.eventId && this.userId)
     }

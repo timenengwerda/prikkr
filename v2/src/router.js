@@ -4,6 +4,7 @@ Vue.use(VueRouter)
 const routes = [
   { path: '/', component: view('event/New') },
   { name: 'showEvent', path: '/event/:eventId/:userId', component: view('event/Show') },
+  { name: 'editEvent', path: '/event/edit/:eventId/:userId', component: view('event/Edit') },
   { name: 'overviewEvent', path: '/event/overview/:eventId/:userId', component: view('event/Overview') }
 ]
 /* eslint-disable no-new */

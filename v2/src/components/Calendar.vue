@@ -29,6 +29,9 @@ import moment from 'moment'
 
 export default {
   name: 'calendar',
+  props: [
+    'existingDates'
+  ],
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
@@ -75,9 +78,24 @@ export default {
   created () {
     this.previousBtn = this.calendarEl.find('.navigation .previous')
     this.nextBtn = this.calendarEl.find('.navigation .next')
+
+    if (this.existingDates) {
+      // set the times of the existing dates to 23:59:59, same as all other dates in the calendar
+      this.existingDates.forEach(existingDate => {
+        let eD = moment(existingDate)
+        eD.hours(23)
+        eD.minutes(59)
+        eD.seconds(59)
+
+        this.addedDates.push(eD.format('x'))
+      })
+    }
+
     this.year = this.now.year()
     this.activeMonth = this.now.month()
     this.activeYear = this.year
+
+    console.log(this.existingDates)
 
     this.initialise()
   },
@@ -150,7 +168,7 @@ export default {
       }
 
       const date = moment(day.date).format('x')
-      const indexOfDate = this.addedDates.findIndex(a => a === date)
+      const indexOfDate = this.addedDates.findIndex(a => a.toString() === date.toString())
       let daysWithDate = this.getAllDaysWithDate(day.date)
       let selectedStatus = false
       if (indexOfDate < 0) {
@@ -234,7 +252,7 @@ export default {
             date: thisDate.format(),
             inactive: false,
             showFulldate: false,
-            selected: false
+            selected: this.isSelected(thisDate)
           }
 
           if (thisDate < this.now) {
@@ -271,7 +289,7 @@ export default {
             date: thisDate.format(),
             inactive: false,
             showFullDate: false,
-            selected: false
+            selected: this.isSelected(thisDate)
           }
 
           // let dayEl = this.createDayElement(thisDate)
@@ -322,7 +340,7 @@ export default {
               date: dateForNextMonth.format(),
               inactive: false,
               showFulldate: false,
-              selected: false
+              selected: this.isSelected(dateForNextMonth)
             }
 
             if (nextMonthDay === 1) {
@@ -336,6 +354,24 @@ export default {
 
         this.calendar.push(monthObject)
       }
+    },
+    isSelected (date) {
+      let isSelected = false
+      let timestamp = moment(date).format('x')
+
+      this.existingDates.forEach(existingDate => {
+        let existingDateFormat = moment(existingDate)
+        existingDateFormat.hours(23)
+        existingDateFormat.minutes(59)
+        existingDateFormat.seconds(59)
+        existingDateFormat.milliseconds(59)
+
+        if (existingDateFormat.format('x') === timestamp) {
+          isSelected = true
+        }
+      })
+
+      return isSelected
     },
     getLastMonth (year, month) {
       let newMonth = month - 1
