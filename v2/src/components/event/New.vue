@@ -13,7 +13,7 @@
         <label for="eventDescription">Omschrijving van het evenement</label>
         <textarea v-model="eventDescription" id="eventDescription" class="form-control"></textarea>
       </div>
-      <calendar @newDateArray="updateDate($event)"></calendar>
+      <calendar :existingDates="[]" @newDateArray="updateDate($event)"></calendar>
     </section>
 
     <section class="your-info">
