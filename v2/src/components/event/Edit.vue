@@ -31,6 +31,28 @@
         </div>
       </section>
 
+      <h1>genodigden</h1>
+      <section class="invites">
+        <ul>
+          <li class="userListItem" v-for="(invite, index) in event.invites">
+            <span class="number">{{index + 1}}</span>
+            <div class="user">
+              <span class="name">
+                <label>Naam</label>
+                <input type="text" @keyup="allInvitesValid()" v-model="invite.name" class="form-control" name="name">
+              </span>
+              <span class="email">
+                <label>E-mail</label>
+                <input type="email" @keyup="allInvitesValid()" v-model="invite.email" class="form-control" name="email">
+              </span>
+            </div>
+            <button class="btn btn-danger removeUser" @click="removeInvite(invite)">X</button>
+          </li>
+        </ul>
+        <a href="#" @click="addNewInvite()">Nieuwe uitnodiging toevoegen</a>
+      </section>
+
+      <button @click="saveEvent()">Opslaan</button>
       <a v-bind:href="overviewUrl" class="btn btn-primary">Terug naar het overzicht</a>
     </div>
   </div>
@@ -66,7 +88,8 @@ export default {
         location: '',
         creation_date: '',
         creation_time: '',
-        dates: []
+        dates: [],
+        invites: []
       }
     }
   },
@@ -87,16 +110,17 @@ export default {
     },
     saveEvent () {
       var data = {
-        eventCode: false,
+        eventCode: this.eventId,
         name: this.event.name,
         location: this.event.location,
         description: this.event.description,
-        creator_name: this.creator_name,
-        creator_email: this.creator_email,
+        creator_name: this.event.creator_name,
+        creator_email: this.event.creator_email,
         // users: this.invites,
-        dates: this.datesToAdd,
+        dates: this.event.dates,
         creatorId: this.userId
       }
+      console.log(data)
 
       this.$http.post(`${config.rootUrl}/api/edit_event.php`, data).then((result) => {
         console.log(result)
@@ -110,7 +134,7 @@ export default {
     init () {
       this.$http.get(`${config.rootUrl}/api/get_event.php?code=${this.eventId}&userCode=${this.userId}`).then((result) => {
         this.loading = false
-
+        console.log(result.body.data)
         if (result.ok && result.body.data) {
           const dataObject = result.body.data
           if (dataObject) {
@@ -126,6 +150,7 @@ export default {
               this.event.creation_date = moment(data.creation_date).format('DD MMM')
               this.event.creation_time = moment(data.creation_date).format('kk:mm')
               this.event.dates = []
+              this.event.invites = data.users
 
               if (data.dates) {
                 data.dates.forEach(date => this.event.dates.push(date.timestamp))

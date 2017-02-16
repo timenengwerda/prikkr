@@ -6,9 +6,6 @@ $data['result'] = false;
 $post = file_get_contents("php://input");
 $postData = json_decode($post, true);
 
-$postData['code'] = 'df10b';
-$postData['userCode'] = '6e020';
-
 $data['result'] = false;
 $data['postData'] = $postData;
 

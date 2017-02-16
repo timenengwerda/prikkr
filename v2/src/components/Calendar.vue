@@ -95,8 +95,6 @@ export default {
     this.activeMonth = this.now.month()
     this.activeYear = this.year
 
-    console.log(this.existingDates)
-
     this.initialise()
   },
   methods: {
@@ -328,7 +326,14 @@ export default {
         if (lastDay.weekday() > 0) {
           const daysToAppend = (7 - lastDay.weekday())
           for (var nextMonthDay = 1; nextMonthDay <= daysToAppend; nextMonthDay++) {
-            const dateForNextMonth = moment([this.year, thisMonth + 1, nextMonthDay])
+            let mo = thisMonth + 1
+            let ye = this.year
+
+            if ((thisMonth + 1) >= 12) {
+              mo = 0
+              ++ye
+            }
+            const dateForNextMonth = moment([ye, mo, nextMonthDay])
             dateForNextMonth.hours(23)
             dateForNextMonth.minutes(59)
             dateForNextMonth.seconds(59)

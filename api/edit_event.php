@@ -1,6 +1,6 @@
 <?php
 error_reporting(E_ALL);
-ini_set('display_errors', 1); 
+ini_set('display_errors', 1);
 require_once('connect.php');
 $post = file_get_contents("php://input");
 $postData = json_decode($post, true);
@@ -10,6 +10,8 @@ $data['data'] = $postData;
 
 require_once('mailer.php');
 
+var_dump($postData);
+exit;
 if (isset($postData['name']) && !empty($postData['name'])
 	&& isset($postData['description']) && !empty($postData['description'])
 	&& isset($postData['location']) && !empty($postData['location'])
@@ -34,13 +36,13 @@ if (isset($postData['name']) && !empty($postData['name'])
 		//The event exists!
 
 		//Update the event
-		$qry = "UPDATE 
-					event 
-				SET 
-					name = '".mysqli_real_escape_string($connection, $postData['name'])."', 
+		$qry = "UPDATE
+					event
+				SET
+					name = '".mysqli_real_escape_string($connection, $postData['name'])."',
 					description = '".mysqli_real_escape_string($connection, $postData['description'])."',
 					location = '".mysqli_real_escape_string($connection, $postData['location'])."'
-				WHERE id = '".mysqli_real_escape_string($connection, $eventId)."'";		
+				WHERE id = '".mysqli_real_escape_string($connection, $eventId)."'";
 		if (mysqli_query($connection, $qry)) {
 			//The event is updated. Now update/remove/add dates
 			$newDateIds = processDates($postData['dates'], $eventId);
@@ -48,16 +50,16 @@ if (isset($postData['name']) && !empty($postData['name'])
 			$creatorCode = processCreator($postData['creator_name'], $postData['creator_email'], $postData['creatorId'], $postData['eventCode']);
 			$allUsers = getAllUsers($eventId);
 			$eventCode = $postData['eventCode'];
-			
+
 			//for each new date every user should get a new choice in date_userchoice
 			foreach ($newDateIds as $dateId) {
 				foreach ($allUsers as  $user) {
 					//Save the user choice in a seperate table; we'll be saving this for later handling later
 					//The user choice, obviously, is 0 at this moment
-					$qry = "INSERT INTO 
-									date_userchoice (user_id, event_date_id) 
+					$qry = "INSERT INTO
+									date_userchoice (user_id, event_date_id)
 								VALUES (
-									'".mysqli_real_escape_string($connection, $user['id'])."', 
+									'".mysqli_real_escape_string($connection, $user['id'])."',
 									'".mysqli_real_escape_string($connection, $dateId)."'
 								)
 							ON DUPLICATE KEY UPDATE
@@ -111,8 +113,8 @@ function processCreator ($name, $email, $creatorId, $eventCode) {
 
 	$creatorCode = false;
 
-	$qry = "UPDATE event_user 
-			SET 
+	$qry = "UPDATE event_user
+			SET
 				name = '" . mysqli_real_escape_string($connection, $name) . "',
 				email = '" . mysqli_real_escape_string($connection, $email) . "'
 			WHERE
@@ -124,13 +126,13 @@ function processCreator ($name, $email, $creatorId, $eventCode) {
 			while ($row = mysqli_fetch_array($result)) {
 				$creatorCode = $row['code'];
 
-			}	
+			}
 		}
 	}
 
 /*$html = '
 Hoi ' . $name . ',<br>
-Je hebt zojuist op Prikkr je evenement gewijzigd. 
+Je hebt zojuist op Prikkr je evenement gewijzigd.
 Je kan je evenement <a href="http://www.tengwerda.nl/prikkr/#/event/' . $eventCode . '/' . $creatorCode . '">hier</a> terug vinden.
 ';
 	mailIt($email, 'Je hebt je evenement gewijzigd op Prikkr', $html);*/
@@ -169,10 +171,10 @@ function processUsers ($users, $eventId) {
 					$toBeDeleted[] = $row['id'];
 				}
 			}
-			
+
 		}
 	}
-	
+
 
 	$usersToUpdate = array();
 	//Loop through the existing users, check if they can be found in the receiving users
@@ -192,10 +194,10 @@ function processUsers ($users, $eventId) {
 	if (count($toBeDeleted) > 0) {
 		foreach ($toBeDeleted as $id) {
 			//delete the IDs that were not retrieved in the receivingIds
-			$qry = "DELETE FROM event_user WHERE id = '" . mysqli_real_escape_string($connection, $id) . "' LIMIT 1";	
+			$qry = "DELETE FROM event_user WHERE id = '" . mysqli_real_escape_string($connection, $id) . "' LIMIT 1";
 			mysqli_query($connection, $qry);
 
-			$qry = "DELETE FROM date_userchoice WHERE user_id = '" . mysqli_real_escape_string($connection, $id) . "'";	
+			$qry = "DELETE FROM date_userchoice WHERE user_id = '" . mysqli_real_escape_string($connection, $id) . "'";
 			mysqli_query($connection, $qry);
 		}
 	}
@@ -203,12 +205,12 @@ function processUsers ($users, $eventId) {
 
 	if (count($usersToUpdate) > 0) {
 		foreach ($usersToUpdate as $id => $user) {
-			$qry = "UPDATE 
-						event_user 
-					SET 
+			$qry = "UPDATE
+						event_user
+					SET
 						name = '". mysqli_real_escape_string($connection, $user['name']) ."',
-						email = '". mysqli_real_escape_string($connection, $user['email']) ."' 
-					WHERE 
+						email = '". mysqli_real_escape_string($connection, $user['email']) ."'
+					WHERE
 						id = '". mysqli_real_escape_string($connection, $id) ."'";
 			mysqli_query($connection, $qry);
 
@@ -224,10 +226,10 @@ function processUsers ($users, $eventId) {
 				&&
 				isset($user['email']) && $user['email'] && !empty($user['email'])) {
 				$code = createCode();
-				$qry = "INSERT INTO 
-								event_user (event_id, name, email, code) 
+				$qry = "INSERT INTO
+								event_user (event_id, name, email, code)
 							VALUES (
-								'".mysqli_real_escape_string($connection, $eventId)."', 
+								'".mysqli_real_escape_string($connection, $eventId)."',
 								'".mysqli_real_escape_string($connection, $user['name'])."',
 								'".mysqli_real_escape_string($connection, $user['email'])."',
 								'".mysqli_real_escape_string($connection, $code)."'
@@ -291,14 +293,14 @@ function processDates ($dates, $eventId) {
 			}
 		}
 	}
-	
+
 	if (count($toBeDeleted) > 0) {
 		foreach ($toBeDeleted as $id) {
 			//delete the IDs that were not retrieved in the receivingIds
-			$qry = "DELETE FROM event_date WHERE id = '" . mysqli_real_escape_string($connection, $id) . "' LIMIT 1";	
+			$qry = "DELETE FROM event_date WHERE id = '" . mysqli_real_escape_string($connection, $id) . "' LIMIT 1";
 			mysqli_query($connection, $qry);
 
-			$qry = "DELETE FROM date_userchoice WHERE event_date_id = '" . mysqli_real_escape_string($connection, $id) . "'";	
+			$qry = "DELETE FROM date_userchoice WHERE event_date_id = '" . mysqli_real_escape_string($connection, $id) . "'";
 			mysqli_query($connection, $qry);
 		}
 	}
@@ -306,21 +308,21 @@ function processDates ($dates, $eventId) {
 
 	if (count($datesToUpdate) > 0) {
 		foreach ($datesToUpdate as $id => $date) {
-			$qry = "UPDATE 
-						event_date 
-					SET 
-						chosen_date = '". mysqli_real_escape_string($connection, $date) ."' 
-					WHERE 
+			$qry = "UPDATE
+						event_date
+					SET
+						chosen_date = '". mysqli_real_escape_string($connection, $date) ."'
+					WHERE
 						id = '". mysqli_real_escape_string($connection, $id) ."'";
 			mysqli_query($connection, $qry);
 
 			//When a date is updated its not more than fair then that the choice a user
 			//made in the past should be reset(Because he didnt vote for the changed date!!)
-			$qry = "UPDATE 
-						date_userchoice 
-					SET 
+			$qry = "UPDATE
+						date_userchoice
+					SET
 						choice = 0
-					WHERE 
+					WHERE
 						event_date_id = '". mysqli_real_escape_string($connection, $id) ."'";
 			mysqli_query($connection, $qry);
 
@@ -334,10 +336,10 @@ function processDates ($dates, $eventId) {
 			//add new date
 			if ($date['date'] && !empty($date['date'])) {
 				$reformattedDate = date('Y-m-d H:i:s', strtotime($date['date']));
-				$qry = "INSERT INTO 
-								event_date (event_id, chosen_date) 
+				$qry = "INSERT INTO
+								event_date (event_id, chosen_date)
 							VALUES (
-								'".mysqli_real_escape_string($connection, $eventId)."', 
+								'".mysqli_real_escape_string($connection, $eventId)."',
 								'".mysqli_real_escape_string($connection, $reformattedDate)."'
 							)";
 				$result = mysqli_query($connection, $qry);
